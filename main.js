@@ -36,19 +36,35 @@
          <p><strong>Following:</strong> ${userData.following}</p>
          <p><strong>Public Repositories:</strong> ${userData.public_repos}</p>
        </div>
-       <h3>Latest 5 Repositories</h3>
-       <ul>
-         ${reposData.slice(0, 5).map(repo => `
-           <li>
-             <a href="${repo.html_url}" target="_blank">${repo.name}</a>
-             <p>${repo.description || 'No description available'}</p>
-             <p><strong>Language:</strong> ${repo.language || 'N/A'}</p>
-             <p><strong>Stars:</strong> ${repo.stargazers_count} | <strong>Forks:</strong> ${repo.forks_count}</p>
-           </li>
-         `).join('')}
-       </ul>
      `;
    } catch (error) {
      profileContainer.innerHTML = `<p>Error: ${error.message}</p>`;
    }
  });
+
+
+
+ document.getElementById('searchButton').addEventListener('click', function() {
+
+  let movieName = document.getElementById('movieInput').value;
+  let apiUrl = 'https://api.tvmaze.com/singlesearch/shows?q=' + movieName;
+  fetch(apiUrl)
+      .then(function(response) {
+          return response.json();
+      })
+      .then(function(data) {
+         let resultDiv = document.getElementById('movieResult');
+          if (data.name) {
+              resultDiv.innerHTML = '<h2>' + data.name + '</h2>' +
+                                    '<p><strong>Language:</strong> ' + data.language + '</p>' +
+                                    '<p><strong>Genres:</strong> ' + data.genres.join(', ') + '</p>' +
+                                    '<p><strong>Summary:</strong> ' + data.summary + '</p>' +
+                                    (data.image ? '<img src="' + data.image.medium + '" alt="Show Poster">' : '');
+          } else {
+              resultDiv.innerHTML = '<p>Show not found!</p>';
+          }
+      })
+      .catch(function(error) {
+          console.log('Error:', error);
+      });
+});
